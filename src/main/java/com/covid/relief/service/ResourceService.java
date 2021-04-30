@@ -7,10 +7,14 @@ import java.util.stream.Collectors;
 
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.covid.relief.dto.Resource;
 import com.covid.relief.entity.ResourceEntity;
+import com.covid.relief.exception.ApiError;
+import com.covid.relief.exception.ApiRuntimeException;
 import com.covid.relief.mapper.ResourceMapper;
 import com.covid.relief.repository.ResourceRepository;
 
@@ -31,7 +35,8 @@ public class ResourceService {
 			resource.setId(resourceEntity.get().getId());
 			return Mappers.getMapper(ResourceMapper.class).toModel(Mappers.getMapper(ResourceMapper.class).toEntity(resource));
 		}
-		throw new RuntimeException("Error occured while updating.");
+		throw new ApiRuntimeException(HttpStatus.NOT_FOUND, "Resource not found with id: " + id);
+//		throw new ApiException(HttpStatus.NOT_FOUND, "Resource not found with id: " + id);
 	}
 	
 	public Resource getById(UUID id) {
@@ -39,7 +44,8 @@ public class ResourceService {
 		if(resourceEntity.isPresent()) {
 			return Mappers.getMapper(ResourceMapper.class).toModel(resourceEntity.get());
 		}
-		throw new RuntimeException("Data not found with the given id: " + id);
+		throw new ApiRuntimeException(HttpStatus.NOT_FOUND, "Resource not found with id: " + id);
+//		throw new ApiException(HttpStatus.NOT_FOUND, "Resource not found with id: " + id);
 	}
 	
 	public List<Resource> getAll() {

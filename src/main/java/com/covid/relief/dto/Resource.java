@@ -1,17 +1,29 @@
 package com.covid.relief.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class Resource extends Basic {
 
+	@NotBlank
 	private String name;
 	
+	@NotNull
 	private Address address;
 	
-	private Number contactNo;
+	@Pattern(regexp="(^$|[0-9]{10})")
+	private String contactNo;
 	
 	private boolean oxygenCylinders;
 	
 	private boolean oxygenRefill;
 	
+	@NotNull
 	private Medicines medicines;
 
 	public String getName() {
@@ -30,11 +42,11 @@ public class Resource extends Basic {
 		this.address = address;
 	}
 
-	public Number getContactNo() {
+	public String getContactNo() {
 		return contactNo;
 	}
 
-	public void setContactNo(Number contactNo) {
+	public void setContactNo(String contactNo) {
 		this.contactNo = contactNo;
 	}
 

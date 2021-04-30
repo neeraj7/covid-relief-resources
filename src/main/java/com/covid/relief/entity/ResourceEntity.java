@@ -16,7 +16,7 @@ public class ResourceEntity extends BasicEntity {
 	@Embedded
 	private Address address;
 	
-	private Number contactNo;
+	private String contactNo;
 	
 	private boolean oxygenCylinders;
 	
@@ -41,11 +41,11 @@ public class ResourceEntity extends BasicEntity {
 		this.address = address;
 	}
 
-	public Number getContactNo() {
+	public String getContactNo() {
 		return contactNo;
 	}
 
-	public void setContactNo(Number contactNo) {
+	public void setContactNo(String contactNo) {
 		this.contactNo = contactNo;
 	}
 

@@ -3,6 +3,8 @@ package com.covid.relief.controller;
 import java.util.List;
 import java.util.UUID;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -37,7 +39,7 @@ public class ResourceController {
 	
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
-	public Resource create(@RequestBody Resource resource) {
+	public Resource create(@Valid @RequestBody Resource resource) {
 		return resourceService.create(resource);
 	}
 	
@@ -48,7 +50,7 @@ public class ResourceController {
     }
 	
 	@PutMapping("/{id}")
-    public Resource update(@RequestBody Resource resource, @PathVariable UUID id) {
+    public Resource update(@Valid @RequestBody Resource resource, @PathVariable UUID id) {
 		return resourceService.update(resource, id);
 	}
 
