@@ -13,5 +13,4 @@ public interface TweetRepository extends JpaRepository<TweetEntity, UUID>{
 
 	Optional<TweetEntity> findByTweetId(long id);
 	
-	Optional<TweetEntity> findByPhoneNumber(long phoneNumber);
 }

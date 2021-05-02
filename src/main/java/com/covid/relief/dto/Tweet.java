@@ -1,7 +1,12 @@
 package com.covid.relief.dto;
 
 import java.util.Date;
+import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
+@JsonInclude(Include.NON_NULL)
 public class Tweet extends Basic {
 	
 	private long tweetId;
@@ -10,9 +15,7 @@ public class Tweet extends Basic {
 	
 	private String text;
 	
-	private long phoneNumber;
-	
-	private String additionalNumbers;
+	private Set<Phone> contacts;
 	
 	private String userEntity;
 
@@ -40,20 +43,12 @@ public class Tweet extends Basic {
 		this.text = text;
 	}
 
-	public long getPhoneNumber() {
-		return phoneNumber;
+	public Set<Phone> getContacts() {
+		return contacts;
 	}
 
-	public void setPhoneNumber(long phoneNumber) {
-		this.phoneNumber = phoneNumber;
-	}
-
-	public String getAdditionalNumbers() {
-		return additionalNumbers;
-	}
-
-	public void setAdditionalNumbers(String additionalNumbers) {
-		this.additionalNumbers = additionalNumbers;
+	public void setContacts(Set<Phone> contacts) {
+		this.contacts = contacts;
 	}
 
 	public String getUser() {

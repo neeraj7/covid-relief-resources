@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.covid.relief.entity.TweetEntity;
+import com.covid.relief.dto.Tweet;
 import com.covid.relief.service.TwitterService;
 
 import twitter4j.QueryResult;
@@ -27,12 +27,30 @@ public class TwitterController {
 	private TwitterService twitterService;
 	
 	@GetMapping
-	public List<TweetEntity> getTweetsByHashtag(@RequestParam("city") String city, @RequestParam("resource") String resource) {
+	public List<Tweet> getTweetsByHashtag(@RequestParam("city") String city, @RequestParam("resource") String resource) {
 		return twitterService.getAllSavedTweets(city, resource);
 	}
 	
 	@GetMapping("/queryResult")
 	public QueryResult getQueryResult(@RequestParam("city") String city, @RequestParam("resource") String resource) {
+		
+		// read file
+//		try {
+//			
+//			Scanner sc = new Scanner(new ClassPathResource("cities.txt").getFile());
+//			
+//			Set<String> cities = new HashSet<>();
+//			while(sc.hasNextLine()) {
+//				cities.add(sc.nextLine().toLowerCase());
+//			}
+//			
+//			System.out.println("Data from file. " + cities.contains("delhi"));
+//			
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+		
 		return twitterService.filterTweets(city, resource);
 	}
 	
