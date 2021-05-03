@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -73,38 +74,47 @@ public class TwitterService {
 			result = twitter.search(query);
 
 			// Filter out all the tweets which are not stored in DB
-			result.getTweets().stream().filter(t -> tweetRepo.findByTweetId(t.getId()).isEmpty()).forEach(tweet -> {
+			result.getTweets().stream().filter(t -> {
+				
+				 Optional<TweetEntity> findByTweetId = tweetRepo.findByTweetId(t.getId());
+				 
+				 if(findByTweetId.isPresent()) {
+					 LOGGER.info("Tweet found with id: ", findByTweetId.get().getTweetId());
+				 }
+				 
+				 return findByTweetId.isEmpty();
+				}).forEach(tweet -> {
 
 				String tweetText = tweet.getRetweetedStatus() != null ? tweet.getRetweetedStatus().getText()
 						: tweet.getText();
 
 				// Iterate over all the filtered tweets
-//				Iterator<PhoneNumberMatch> phoneNumbers = PhoneNumberUtil.getInstance().findNumbers(tweetText, "IN")
-//						.iterator();
+				Iterator<PhoneNumberMatch> phoneNumbers = PhoneNumberUtil.getInstance().findNumbers(tweetText, "IN")
+						.iterator();
 				
-				StreamSupport.stream(PhoneNumberUtil.getInstance().findNumbers(tweetText, "IN").spliterator(), false)
-				.filter(pr -> phoneRepo.findByPhoneNumber(pr.number().getNationalNumber()).isEmpty())
-				.forEach(number -> saveTweetEntity(tweet, number));
+//				StreamSupport.stream(PhoneNumberUtil.getInstance().findNumbers(tweetText, "IN").spliterator(), false)
+//				.filter(pr -> phoneRepo.findByPhoneNumber(pr.number().getNationalNumber()).isEmpty())
+//				.forEach(number -> saveTweetEntity(tweet, number));
 				
 
 				// Need to check by phone number in DB
-//				while (phoneNumbers.hasNext()) {
-//					PhoneNumberMatch pnm = phoneNumbers.next();
-//					long phone = pnm.number().getNationalNumber();
-//
-//					Optional<TweetEntity> tweetEntity = tweetRepo.findByPhoneNumber(phone);
-//
-//					if (tweetEntity.isPresent() && phoneNumbers.hasNext()) {
-//						PhoneNumberMatch pnm2 = phoneNumbers.next();
-//						// if the number doesn't exist then add new tweet entity
-//						if (!isPhoneNumberExists(pnm2.number().getNationalNumber())) {
-//							saveTweetEntity(tweet, phoneNumbers, phone);
-//							break;
-//						}
-//					} else if (tweetEntity.isEmpty()) {
-//						saveTweetEntity(tweet, phoneNumbers, phone);
-//					}
-//				}
+				while (phoneNumbers.hasNext()) {
+					PhoneNumberMatch pnm = phoneNumbers.next();
+					long phone = pnm.number().getNationalNumber();
+
+					Optional<PhoneEntity> phoneEntity = phoneRepo.findByPhoneNumber(phone);
+
+					if (phoneEntity.isPresent() && phoneNumbers.hasNext()) {
+						PhoneNumberMatch pnm2 = phoneNumbers.next();
+						// if the number doesn't exist then add new tweet entity
+						if (!isPhoneNumberExists(pnm2.number().getNationalNumber())) {
+							saveTweetEntity(tweet, phoneNumbers, phone);
+							break;
+						}
+					} else if (phoneEntity.isEmpty()) {
+						saveTweetEntity(tweet, phoneNumbers, phone);
+					}
+				}
 			});
 
 //			SentenceDetectorNLP nlp = new SentenceDetectorNLP();
@@ -133,22 +143,22 @@ public class TwitterService {
 		LOGGER.info("Saved tweet entity successfully: {}", savedEntity);
 	}
 
-//	private void saveTweetEntity(Status tweet, Iterator<PhoneNumberMatch> phoneNumbers, long phone) {
-//		TweetEntity tweetToBeSaved = new TweetEntity();
-//		tweetToBeSaved.setTweetId(tweet.getId());
-//		tweetToBeSaved.setCreatedAt(tweet.getCreatedAt());
-//		tweetToBeSaved.setUser(tweet.getUser().getScreenName());
-//		tweetToBeSaved.setText(extractRelevantTextFromTweet(tweet, phone));
-//		
-//		// Save it to DB;
-//		TweetEntity savedEntity = tweetRepo.save(tweetToBeSaved);
-//		LOGGER.info("Saved phone number successfully: {}",phoneRepo.save(new PhoneEntity(phone, savedEntity)));
-//		while(phoneNumbers.hasNext()) {
-//			phoneRepo.save(new PhoneEntity(phoneNumbers.next().number().getNationalNumber(), savedEntity));
-//		}
-//		
-//		LOGGER.info("Saved tweet entity successfully: {}", savedEntity);
-//	}
+	private void saveTweetEntity(Status tweet, Iterator<PhoneNumberMatch> phoneNumbers, long phone) {
+		TweetEntity tweetToBeSaved = new TweetEntity();
+		tweetToBeSaved.setTweetId(tweet.getId());
+		tweetToBeSaved.setCreatedAt(tweet.getCreatedAt());
+		tweetToBeSaved.setUser(tweet.getUser().getScreenName());
+		tweetToBeSaved.setText(extractRelevantTextFromTweet(tweet));
+		
+		// Save it to DB;
+		TweetEntity savedEntity = tweetRepo.save(tweetToBeSaved);
+		LOGGER.info("Saved phone number successfully: {}",phoneRepo.save(new PhoneEntity(phone, savedEntity)));
+		while(phoneNumbers.hasNext()) {
+			phoneRepo.save(new PhoneEntity(phoneNumbers.next().number().getNationalNumber(), savedEntity));
+		}
+		
+		LOGGER.info("Saved tweet entity successfully: {}", savedEntity);
+	}
 
 	private String extractRelevantTextFromTweet(Status tweet) {
 		UserMentionEntity[] mentions = tweet.getUserMentionEntities();
