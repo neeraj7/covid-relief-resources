@@ -1,11 +1,9 @@
 package com.covid.relief.entity;
 
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.covid.relief.dto.Address;
-import com.covid.relief.dto.Medicines;
 
 @Entity
 @Table(name = "resources")
@@ -13,17 +11,9 @@ public class ResourceEntity extends BasicEntity {
 	
 	private String name;
 	
-	@Embedded
-	private Address address;
-	
-	private String contactNo;
-	
-	private boolean oxygenCylinders;
-	
-	private boolean oxygenRefill;
-
-	@Embedded
-	private Medicines medicines;
+	@ManyToOne
+	@JoinColumn(name = "tweet_id", nullable = false)
+	private TweetEntity tweet;
 
 	public String getName() {
 		return name;
@@ -33,46 +23,12 @@ public class ResourceEntity extends BasicEntity {
 		this.name = name;
 	}
 
-	public Address getAddress() {
-		return address;
+	public TweetEntity getTweet() {
+		return tweet;
 	}
 
-	public void setAddress(Address address) {
-		this.address = address;
+	public void setTweet(TweetEntity tweet) {
+		this.tweet = tweet;
 	}
-
-	public String getContactNo() {
-		return contactNo;
-	}
-
-	public void setContactNo(String contactNo) {
-		this.contactNo = contactNo;
-	}
-
-	public boolean isOxygenCylinders() {
-		return oxygenCylinders;
-	}
-
-	public void setOxygenCylinders(boolean oxygenCylinders) {
-		this.oxygenCylinders = oxygenCylinders;
-	}
-
-	public boolean isOxygenRefill() {
-		return oxygenRefill;
-	}
-
-	public void setOxygenRefill(boolean oxygenRefill) {
-		this.oxygenRefill = oxygenRefill;
-	}
-
-	public Medicines getMedicines() {
-		return medicines;
-	}
-
-	public void setMedicines(Medicines medicines) {
-		this.medicines = medicines;
-	}
-	
-	
 	
 }

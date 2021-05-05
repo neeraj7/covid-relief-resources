@@ -1,0 +1,19 @@
+delhi
+mumbai
+pune
+bengaluru
+thane
+nagpur
+chennai
+gurugram
+gurgaon
+noida
+lucknow
+agra
+kerala
+haryana
+madhya pradesh
+tamilnadu
+uttar pradesh
+assam
+faridabad

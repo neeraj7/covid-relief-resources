@@ -3,11 +3,11 @@ package com.covid.relief.entity;
 import java.util.Date;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -22,6 +22,36 @@ public class TweetEntity extends BasicEntity {
 	private String text;
 
 	private String userEntity;
+	
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "tweet_cities")
+	private Set<CityEntity> cities;
+	
+	private String resource;
+
+	public String getUserEntity() {
+		return userEntity;
+	}
+
+	public void setUserEntity(String userEntity) {
+		this.userEntity = userEntity;
+	}
+
+	public Set<CityEntity> getCities() {
+		return cities;
+	}
+
+	public String getResource() {
+		return resource;
+	}
+
+	public void setResource(String resource) {
+		this.resource = resource;
+	}
+
+	public void setCities(Set<CityEntity> cities) {
+		this.cities = cities;
+	}
 
 	public long getTweetId() {
 		return tweetId;
@@ -50,13 +80,5 @@ public class TweetEntity extends BasicEntity {
 
 	public void setText(String text) {
 		this.text = text;
-	}
-
-	public String getUser() {
-		return userEntity;
-	}
-
-	public void setUser(String user) {
-		this.userEntity = user;
 	}
 }

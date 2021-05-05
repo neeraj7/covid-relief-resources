@@ -15,12 +15,6 @@ public class Phone extends Basic {
 		this.tweet = tweet;
 	}
 
-	@Override
-	public String toString() {
-		return "Phone [phoneNumber=" + phoneNumber + ", tweet=" + tweet + ", getId()=" + getId() + ", getCreated()="
-				+ getCreated() + ", getClass()=" + getClass() + "]";
-	}
-
 	public long getPhoneNumber() {
 		return phoneNumber;
 	}

@@ -1,0 +1,17 @@
+oxygen
+beds
+icu beds
+hospitals
+ambulance
+plasma
+food
+oxygen concentrator
+home icu
+ventilator
+favivir
+favipiravir
+remdesivir
+tocilizumab
+fabiflu
+medicine
+bevacizumab
