@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
@@ -74,32 +75,23 @@ public class AppInitializer {
 	private void init() {
 		log.info("Initialization started.");
 		// read file
-//		try {
+		try {
 
-//			Scanner sc2 = new Scanner(new ClassPathResource("resources.txt").getFile());
+			Resource resource = new ClassPathResource("resources.txt");
 			
-//			Scanner sc2 = new Scanner(ClassLoader.getSystemResourceAsStream("resources.txt"));
-			
-			InputStream in = ClassLoader.getSystemResourceAsStream("classpath:resources.txt");
-			
-			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-			br.lines().forEach(l -> log.info("Reading {}", l));
-			
-//			List<String> resources = new ArrayList<>();
-//			while (sc2.hasNextLine()) {
-//				resources.add(sc2.nextLine().toLowerCase());
-//			}
+			BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()));
+			List<String> resources = new ArrayList<>();
+			br.lines().forEach(l -> resources.add(l.toLowerCase()));
 
-//			Scanner sc = new Scanner(new ClassPathResource("cities.txt").getFile());
-//			while (sc.hasNextLine()) {
-//				cities.put(sc.nextLine().toLowerCase(), resources);
-//			}
-//			
-//			cities.keySet().forEach(city -> log.info("Added city: {}", city));
+			Resource city = new ClassPathResource("cities.txt");
 			
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+			BufferedReader br2 = new BufferedReader(new InputStreamReader(city.getInputStream()));
+			br2.lines().forEach(l -> cities.put(l.toLowerCase(), resources));
+			
+		} catch (IOException e) {
+			log.error("Error happened in reading files.");
+		}
+		log.info("Initialization finished.");
 	}
 
 	public static Map<String, List<String>> getCitiesMapping() {
@@ -108,7 +100,7 @@ public class AppInitializer {
 
 	@Scheduled(initialDelay = 10000, fixedRate = 300000)
 	public void run() {
-		log.info("Quering twitter to fetch tweets started at :: " + Calendar.getInstance().getTime());
+		log.info("Querying twitter to fetch tweets started at :: " + Calendar.getInstance().getTime());
 		cities.forEach((city, resources) -> resources.forEach(resource -> {
 			QueryResult result = filterAndSaveTweetsInDB(city, resource);
 
