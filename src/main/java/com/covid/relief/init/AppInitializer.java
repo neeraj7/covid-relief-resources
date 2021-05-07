@@ -137,7 +137,7 @@ public class AppInitializer {
 			result = twitter.search(query);
 
 			// Filter out all the tweets which are not stored in DB
-			result.getTweets().stream().filter(t -> tweetRepo.findByTweetId(t.getId()).isEmpty()).forEach(tweet -> {
+			result.getTweets().stream().filter(t -> !tweetRepo.findByTweetId(t.getId()).isPresent()).forEach(tweet -> {
 
 				String tweetText = tweet.getRetweetedStatus() != null ? tweet.getRetweetedStatus().getText()
 						: tweet.getText();
@@ -160,7 +160,7 @@ public class AppInitializer {
 							saveTweetEntity(tweet, city, resource, phoneNumbers, phone);
 							break;
 						}
-					} else if (phoneEntity.isEmpty()) {
+					} else if (!phoneEntity.isPresent()) {
 						saveTweetEntity(tweet, city, resource, phoneNumbers, phone);
 					}
 				}
