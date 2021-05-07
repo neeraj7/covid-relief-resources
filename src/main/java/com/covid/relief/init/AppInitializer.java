@@ -1,6 +1,7 @@
 package com.covid.relief.init;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -72,7 +73,12 @@ public class AppInitializer {
 		// read file
 		try {
 
-			Scanner sc2 = new Scanner(new ClassPathResource("resources.txt").getFile());
+//			Scanner sc2 = new Scanner(new ClassPathResource("resources.txt").getFile());
+			
+			Scanner sc2 = new Scanner(ClassLoader.getSystemResourceAsStream("resources.txt"));
+			
+//			InputStream in = ClassLoader.getSystemResourceAsStream("resources.txt")
+			
 			List<String> resources = new ArrayList<>();
 			while (sc2.hasNextLine()) {
 				resources.add(sc2.nextLine().toLowerCase());
