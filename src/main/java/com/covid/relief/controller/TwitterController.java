@@ -36,10 +36,10 @@ public class TwitterController {
 		return twitterService.getAllSavedTweets(city, resource);
 	}
 	
-	@GetMapping("/query")
-	public QueryResult getQueryResult(@RequestParam("city") String city, @RequestParam("resource") String resource) {
-		return initializer.filterAndSaveTweetsInDB(city, resource);
-	}
+//	@GetMapping("/query")
+//	public QueryResult getQueryResult(@RequestParam("city") String city, @RequestParam("resource") String resource) {
+//		return twitterService.
+//	}
 	
 	private void testTwitterStream() {
 		TwitterStream twitterStream = new TwitterStreamFactory().getInstance().addListener(new StatusListener() {

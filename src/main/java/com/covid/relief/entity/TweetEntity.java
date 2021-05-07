@@ -21,7 +21,7 @@ public class TweetEntity extends BasicEntity {
 	@Column(columnDefinition = "TEXT")
 	private String text;
 
-	private String userEntity;
+	private String userName;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "tweet_cities")
@@ -29,12 +29,12 @@ public class TweetEntity extends BasicEntity {
 	
 	private String resource;
 
-	public String getUserEntity() {
-		return userEntity;
+	public String getUserName() {
+		return userName;
 	}
 
-	public void setUserEntity(String userEntity) {
-		this.userEntity = userEntity;
+	public void setUserName(String userName) {
+		this.userName = userName;
 	}
 
 	public Set<CityEntity> getCities() {

@@ -1,7 +1,10 @@
 package com.covid.relief.init;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
+import java.io.InputStreamReader;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,7 +13,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -22,10 +24,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.covid.relief.constants.Constants;
+import com.covid.relief.dto.QueryHistory;
+import com.covid.relief.dto.QueryResultImpl;
+import com.covid.relief.dto.RateLimitStatusImpl;
 import com.covid.relief.entity.CityEntity;
 import com.covid.relief.entity.PhoneEntity;
 import com.covid.relief.entity.TweetEntity;
@@ -49,7 +55,7 @@ public class AppInitializer {
 
 	private static final Logger log = LoggerFactory.getLogger(AppInitializer.class);
 
-	private static Map<String, List<String>> cities = new HashMap<>(327000);
+	private static Map<String, List<QueryHistory>> cities = new HashMap<>(100);
 
 	@Autowired
 	private TweetRepository tweetRepo;
@@ -72,118 +78,126 @@ public class AppInitializer {
 		// read file
 		try {
 
-			Scanner sc2 = new Scanner(new ClassPathResource("resources.txt").getFile());
-			List<String> resources = new ArrayList<>();
-			while (sc2.hasNextLine()) {
-				resources.add(sc2.nextLine().toLowerCase());
-			}
+			Resource resource = new ClassPathResource("resources.txt");
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()));
+			List<QueryHistory> resources = new ArrayList<>();
+			br.lines().forEach(l -> resources.add(new QueryHistory(l.toLowerCase())));
 
-			Scanner sc = new Scanner(new ClassPathResource("cities.txt").getFile());
-			while (sc.hasNextLine()) {
-				cities.put(sc.nextLine().toLowerCase(), resources);
-			}
+			Resource city = new ClassPathResource("cities.txt");
+			
+			BufferedReader br2 = new BufferedReader(new InputStreamReader(city.getInputStream()));
+			br2.lines().forEach(l -> cities.put(l.toLowerCase(), resources));
+			
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error happened in reading files.");
 		}
+		log.info("Initialization finished.");
 	}
 
-	public static Map<String, List<String>> getCitiesMapping() {
+	public static Map<String, List<QueryHistory>> getCitiesMapping() {
 		return cities;
 	}
 
-	@Scheduled(initialDelay = 10000, fixedRate = 300000)
+	// 30 minutes fixedRate
+	@Scheduled(initialDelay = 10000, fixedRate = 1800 * 1000)
 	public void run() {
-		log.info("Quering twitter to fetch tweets started at :: " + Calendar.getInstance().getTime());
-		cities.forEach((city, resources) -> resources.forEach(resource -> {
-			QueryResult result = filterAndSaveTweetsInDB(city, resource);
+		long start = Instant.now().toEpochMilli();
+		log.info("Querying twitter to fetch tweets started at :: " + Calendar.getInstance().getTime());
+		cities.forEach((city, resources) -> resources.forEach(queryHistory -> {
 
-//			log.info("Rate limit remaining {} and city, resource pair {} {}",
-//					result.getRateLimitStatus().getRemaining(), city, resource);
+			Query query = new Query(Constants.VERIFIED + city + " " + queryHistory.getResource() + " " + appendQuery);
+			query.since(LocalDate.now().minusDays(1).toString());
+
+			// if sinceId is present then add it into the query
+			if (queryHistory.getSinceId() != 0l) {
+				query.setSinceId(queryHistory.getSinceId());
+			}
+
+			QueryResult result = fetchQueryResult(query);
+
+			if (result != null && result.getRateLimitStatus().getRemaining()!=0) {
+
+				// updating the sinceId of the resource
+				queryHistory.setSinceId(result.getSinceId());
+
+				filterAndSaveTweetsInDB(result, city, queryHistory);
+
+			}
 
 			if (result.getRateLimitStatus().getRemaining() == 0) {
 				try {
 					// wait for refresh limit to reset
-					log.info("waiting till the rate limit resets in {} seconds", result.getRateLimitStatus().getSecondsUntilReset());
+					log.info("waiting till the rate limit resets in {} seconds",
+							result.getRateLimitStatus().getSecondsUntilReset());
 					Thread.sleep(result.getRateLimitStatus().getSecondsUntilReset() * 1000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			}
 		}));
+		long end = Instant.now().toEpochMilli();
+		log.info("Quering twitter finished :: " + Calendar.getInstance().getTime());
+		log.info("Time taken: {} seconds" + (end-start)/1000);
+	}
+
+	private QueryResult fetchQueryResult(Query query) {
+		Twitter twitter = TwitterFactory.getSingleton();
+
+		try {
+			return twitter.search(query);
+		} catch (TwitterException e) {
+			log.error("Exception occured while querying the twitter: {}", query.getQuery());
+			QueryResultImpl result = new QueryResultImpl();
+			RateLimitStatusImpl status = new RateLimitStatusImpl(e.getRateLimitStatus());
+			result.setRateLimitStatus(status);
+			return result;
+		}
 	}
 
 	/**
 	 * Method to filter tweets based on the phone numbers, resources, and cities.
 	 * 
 	 * @param city
-	 * @param resource
+	 * @param queryHistory
 	 */
-	public QueryResult filterAndSaveTweetsInDB(String city, String resource) {
-		// Get twitter connection
-		Twitter twitter = TwitterFactory.getSingleton();
+	public void filterAndSaveTweetsInDB(QueryResult result, String city, QueryHistory queryHistory) {
 
-		// To be sent to twitter api
-		Query query = new Query(Constants.VERIFIED + city + " " + resource + appendQuery);
-		Calendar cal = Calendar.getInstance();
-		cal.add(Calendar.DAY_OF_MONTH, -1);
-		
-		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd"); 
-		
-		query.since(format1.format(cal.getTime()));
-		QueryResult result = null;
-		try {
-			
-			// Twitter query search result
-			result = twitter.search(query);
+		// Filter out all the tweets which are not stored in DB
+		result.getTweets().stream().filter(t -> tweetRepo.findByTweetId(t.getId()).isEmpty()).forEach(tweet -> {
 
-			// Filter out all the tweets which are not stored in DB
-			result.getTweets().stream().filter(t -> tweetRepo.findByTweetId(t.getId()).isEmpty()).forEach(tweet -> {
+			String tweetText = tweet.getRetweetedStatus() != null ? tweet.getRetweetedStatus().getText()
+					: tweet.getText();
 
-				String tweetText = tweet.getRetweetedStatus() != null ? tweet.getRetweetedStatus().getText()
-						: tweet.getText();
+			Iterator<PhoneNumberMatch> phoneNumbers = PhoneNumberUtil.getInstance().findNumbers(tweetText, "IN")
+					.iterator();
 
-				// Iterate over all the filtered tweets
-				Iterator<PhoneNumberMatch> phoneNumbers = PhoneNumberUtil.getInstance().findNumbers(tweetText, "IN")
-						.iterator();
+			// Need to check by phone number in DB
+			while (phoneNumbers.hasNext()) {
+				long phone = phoneNumbers.next().number().getNationalNumber();
 
-				// Need to check by phone number in DB
-				while (phoneNumbers.hasNext()) {
-					PhoneNumberMatch pnm = phoneNumbers.next();
-					long phone = pnm.number().getNationalNumber();
+				Optional<PhoneEntity> phoneEntity = phoneRepo.findByPhoneNumber(phone);
 
-					Optional<PhoneEntity> phoneEntity = phoneRepo.findByPhoneNumber(phone);
-
-					if (phoneEntity.isPresent() && phoneNumbers.hasNext()) {
-						PhoneNumberMatch pnm2 = phoneNumbers.next();
-						// if the number doesn't exist then add new tweet entity
-						if (!isPhoneNumberExists(pnm2.number().getNationalNumber())) {
-							saveTweetEntity(tweet, city, resource, phoneNumbers, phone);
-							break;
-						}
-					} else if (phoneEntity.isEmpty()) {
-						saveTweetEntity(tweet, city, resource, phoneNumbers, phone);
+				if (phoneEntity.isPresent() && phoneNumbers.hasNext()) {
+					PhoneNumberMatch pnm2 = phoneNumbers.next();
+					// if the number doesn't exist then add new tweet entity
+					if (!isPhoneNumberExists(pnm2.number().getNationalNumber())) {
+						saveTweetEntity(tweet, city, queryHistory.getResource(), phoneNumbers, phone);
+						break;
 					}
+				} else if (phoneEntity.isEmpty()) {
+					saveTweetEntity(tweet, city, queryHistory.getResource(), phoneNumbers, phone);
 				}
-			});
-			return result;
-
-		} catch (TwitterException e) {
-			try {
-				log.info("waiting till the rate limit resets in {} seconds", e.getRateLimitStatus().getSecondsUntilReset());
-				Thread.sleep(e.getRateLimitStatus().getSecondsUntilReset() * 1000);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
 			}
-		}
-		return result;
+		});
 	}
-
+	
 	private void saveTweetEntity(Status tweet, String city, String resource, Iterator<PhoneNumberMatch> phoneNumbers,
 			long phone) {
 		TweetEntity tweetToBeSaved = new TweetEntity();
 		tweetToBeSaved.setTweetId(tweet.getId());
-		tweetToBeSaved.setCreatedAt(updateDateAsIST(tweet.getCreatedAt()));
-		tweetToBeSaved.setUserEntity(tweet.getUser().getScreenName());
+		tweetToBeSaved.setCreatedAt(tweet.getCreatedAt());
+		tweetToBeSaved.setUserName(tweet.getUser().getScreenName());
 		tweetToBeSaved.setText(extractRelevantTextFromTweet(tweet));
 		tweetToBeSaved.setResource(resource.toLowerCase());
 
@@ -233,8 +247,7 @@ public class AppInitializer {
 
 	private String extractRelevantTextFromTweet(Status tweet) {
 		UserMentionEntity[] mentions = tweet.getUserMentionEntities();
-		String text = removeMentionsFromText(mentions, tweet).replaceAll("\\+91", "");
-		return text;
+		return removeMentionsFromText(mentions, tweet);
 	}
 
 	private String removeMentionsFromText(UserMentionEntity[] mentions, Status tweet) {
