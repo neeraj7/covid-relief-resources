@@ -224,7 +224,7 @@ public class AppInitializer {
 	private void checkAndAddPhoneNumber(TweetEntity savedEntity, long phone) {
 		Optional<PhoneEntity> phoneEntity = phoneRepo.findByPhoneNumber(phone);
 
-		if (phoneEntity.isEmpty())
+		if (!phoneEntity.isPresent())
 			log.info("Saved phone number successfully: {}", phoneRepo.save(new PhoneEntity(phone, savedEntity)));
 		else
 			log.info("Phone number {} already exists", phone);
