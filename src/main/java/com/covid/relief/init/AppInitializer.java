@@ -82,6 +82,9 @@ public class AppInitializer {
 			while (sc.hasNextLine()) {
 				cities.put(sc.nextLine().toLowerCase(), resources);
 			}
+			
+			cities.keySet().forEach(city -> log.info("Added city: {}", city));
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
