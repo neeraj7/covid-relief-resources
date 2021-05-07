@@ -1,7 +1,9 @@
 package com.covid.relief.init;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ResourceUtils;
 
 import com.covid.relief.constants.Constants;
 import com.covid.relief.entity.CityEntity;
@@ -73,11 +76,14 @@ public class AppInitializer {
 		// read file
 		try {
 
-//			Scanner sc2 = new Scanner(new ClassPathResource("resources.txt").getFile());
+			Scanner sc2 = new Scanner(new ClassPathResource("resources.txt").getFile());
 			
-			Scanner sc2 = new Scanner(ClassLoader.getSystemResourceAsStream("resources.txt"));
+//			Scanner sc2 = new Scanner(ClassLoader.getSystemResourceAsStream("resources.txt"));
 			
-//			InputStream in = ClassLoader.getSystemResourceAsStream("resources.txt")
+			InputStream in = ClassLoader.getSystemResourceAsStream("resources.txt");
+			
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+			br.lines().forEach(l -> log.info("Reading {}", l));
 			
 			List<String> resources = new ArrayList<>();
 			while (sc2.hasNextLine()) {
