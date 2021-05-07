@@ -80,7 +80,7 @@ public class AppInitializer {
 			
 //			Scanner sc2 = new Scanner(ClassLoader.getSystemResourceAsStream("resources.txt"));
 			
-			InputStream in = ClassLoader.getSystemResourceAsStream("resources.txt");
+			InputStream in = ClassLoader.getSystemResourceAsStream("classpath:resources.txt");
 			
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			br.lines().forEach(l -> log.info("Reading {}", l));
