@@ -3,12 +3,15 @@ package com.covid.relief.dto;
 import java.util.Date;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class Tweet extends Basic {
 	
-	private long tweetId;
+//	private long tweetId;
 	
 	private Date createdAt;
 	
+	@JsonProperty("tweet")
 	private String text;
 	
 	private Set<Phone> contacts;
@@ -53,13 +56,13 @@ public class Tweet extends Basic {
 		this.cities = cities;
 	}
 
-	public long getTweetId() {
-		return tweetId;
-	}
-
-	public void setTweetId(long tweetId) {
-		this.tweetId = tweetId;
-	}
+//	public long getTweetId() {
+//		return tweetId;
+//	}
+//
+//	public void setTweetId(long tweetId) {
+//		this.tweetId = tweetId;
+//	}
 
 	public Date getCreatedAt() {
 		return createdAt;

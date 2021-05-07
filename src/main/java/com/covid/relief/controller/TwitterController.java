@@ -9,10 +9,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.covid.relief.dto.Tweet;
-import com.covid.relief.init.AppInitializer;
 import com.covid.relief.service.TwitterService;
 
-import twitter4j.QueryResult;
 import twitter4j.StallWarning;
 import twitter4j.Status;
 import twitter4j.StatusDeletionNotice;
@@ -26,21 +24,18 @@ public class TwitterController {
 
 	@Autowired
 	private TwitterService twitterService;
-	
-	@Autowired
-	private AppInitializer initializer;
-	
+
 	@GetMapping
-	public List<Tweet> getTweetsByHashtag(@RequestParam("city") String city, @RequestParam("resource") String resource) 
-	{	
+	public List<Tweet> getTweetsByHashtag(@RequestParam(value = "city", required = false) String city,
+			@RequestParam(value = "resource", required = false) String resource) {
 		return twitterService.getAllSavedTweets(city, resource);
 	}
-	
+
 //	@GetMapping("/query")
 //	public QueryResult getQueryResult(@RequestParam("city") String city, @RequestParam("resource") String resource) {
 //		return twitterService.
 //	}
-	
+
 	private void testTwitterStream() {
 		TwitterStream twitterStream = new TwitterStreamFactory().getInstance().addListener(new StatusListener() {
 			@Override

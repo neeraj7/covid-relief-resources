@@ -15,6 +15,10 @@ public interface TweetMapper {
 
 	@Mapping(source = "createdAt", qualifiedByName = "calculateOlder", target = "older")
 	@Mapping(target = "contacts", ignore = true)
+	@Mapping(target = "createdAt", ignore = true)
+	@Mapping(target = "cities", ignore = true)
+	@Mapping(target = "resource", ignore = true)
+	@Mapping(target = "id", ignore = true)
 	Tweet toModel(TweetEntity tweetEntity);
 	
 	TweetEntity toEntity(Tweet tweet);

@@ -126,10 +126,14 @@ public class AppInitializer {
 
 			if (result.getRateLimitStatus().getRemaining() == 0) {
 				try {
+					if(result.getRateLimitStatus().getSecondsUntilReset() >= 0 ) {
 					// wait for refresh limit to reset
 					log.info("waiting till the rate limit resets in {} seconds",
 							result.getRateLimitStatus().getSecondsUntilReset());
 					Thread.sleep(result.getRateLimitStatus().getSecondsUntilReset() * 1000);
+					log.info("Wait is over, and querying starts again.");
+					}					
+					
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -197,7 +201,7 @@ public class AppInitializer {
 		tweetToBeSaved.setTweetId(tweet.getId());
 		tweetToBeSaved.setCreatedAt(tweet.getCreatedAt());
 		tweetToBeSaved.setUserName(tweet.getUser().getScreenName());
-		tweetToBeSaved.setText(extractRelevantTextFromTweet(tweet));
+		tweetToBeSaved.setText(extractRelevantTextFromTweet(tweet).trim());
 		tweetToBeSaved.setResource(resource.toLowerCase());
 
 		// save all the cities and get the desired set for tweet
