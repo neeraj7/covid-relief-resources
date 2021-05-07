@@ -74,9 +74,9 @@ public class AppInitializer {
 	private void init() {
 		log.info("Initialization started.");
 		// read file
-		try {
+//		try {
 
-			Scanner sc2 = new Scanner(new ClassPathResource("resources.txt").getFile());
+//			Scanner sc2 = new Scanner(new ClassPathResource("resources.txt").getFile());
 			
 //			Scanner sc2 = new Scanner(ClassLoader.getSystemResourceAsStream("resources.txt"));
 			
@@ -85,21 +85,21 @@ public class AppInitializer {
 			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 			br.lines().forEach(l -> log.info("Reading {}", l));
 			
-			List<String> resources = new ArrayList<>();
-			while (sc2.hasNextLine()) {
-				resources.add(sc2.nextLine().toLowerCase());
-			}
+//			List<String> resources = new ArrayList<>();
+//			while (sc2.hasNextLine()) {
+//				resources.add(sc2.nextLine().toLowerCase());
+//			}
 
-			Scanner sc = new Scanner(new ClassPathResource("cities.txt").getFile());
-			while (sc.hasNextLine()) {
-				cities.put(sc.nextLine().toLowerCase(), resources);
-			}
+//			Scanner sc = new Scanner(new ClassPathResource("cities.txt").getFile());
+//			while (sc.hasNextLine()) {
+//				cities.put(sc.nextLine().toLowerCase(), resources);
+//			}
+//			
+//			cities.keySet().forEach(city -> log.info("Added city: {}", city));
 			
-			cities.keySet().forEach(city -> log.info("Added city: {}", city));
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 	}
 
 	public static Map<String, List<String>> getCitiesMapping() {
