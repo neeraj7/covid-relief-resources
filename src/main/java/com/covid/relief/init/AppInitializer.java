@@ -31,7 +31,6 @@ import org.springframework.stereotype.Component;
 import com.covid.relief.constants.Constants;
 import com.covid.relief.dto.QueryHistory;
 import com.covid.relief.dto.QueryResultImpl;
-import com.covid.relief.dto.RateLimitStatusImpl;
 import com.covid.relief.entity.CityEntity;
 import com.covid.relief.entity.PhoneEntity;
 import com.covid.relief.entity.TweetEntity;
@@ -116,7 +115,7 @@ public class AppInitializer {
 
 			QueryResult result = fetchQueryResult(query);
 
-			if (result != null && result.getRateLimitStatus().getRemaining()!=0) {
+			if (result != null && result.getRateLimitStatus().getRemaining() != 0) {
 
 				// updating the sinceId of the resource
 				queryHistory.setSinceId(result.getSinceId());
@@ -138,7 +137,7 @@ public class AppInitializer {
 		}));
 		long end = Instant.now().toEpochMilli();
 		log.info("Quering twitter finished :: " + Calendar.getInstance().getTime());
-		log.info("Time taken: {} seconds" + (end-start)/1000);
+		log.info("Time taken: {} seconds" + (end - start) / 1000);
 	}
 
 	private QueryResult fetchQueryResult(Query query) {
@@ -149,8 +148,8 @@ public class AppInitializer {
 		} catch (TwitterException e) {
 			log.error("Exception occured while querying the twitter: {}", query.getQuery());
 			QueryResultImpl result = new QueryResultImpl();
-			RateLimitStatusImpl status = new RateLimitStatusImpl(e.getRateLimitStatus());
-			result.setRateLimitStatus(status);
+//			RateLimitStatusImpl status = new RateLimitStatusImpl(e.getRateLimitStatus());
+			result.setRateLimitStatus(e.getRateLimitStatus());
 			return result;
 		}
 	}
@@ -164,7 +163,7 @@ public class AppInitializer {
 	public void filterAndSaveTweetsInDB(QueryResult result, String city, QueryHistory queryHistory) {
 
 		// Filter out all the tweets which are not stored in DB
-		result.getTweets().stream().filter(t -> tweetRepo.findByTweetId(t.getId()).isEmpty()).forEach(tweet -> {
+		result.getTweets().stream().filter(t -> !tweetRepo.findByTweetId(t.getId()).isPresent()).forEach(tweet -> {
 
 			String tweetText = tweet.getRetweetedStatus() != null ? tweet.getRetweetedStatus().getText()
 					: tweet.getText();
@@ -184,14 +183,14 @@ public class AppInitializer {
 					if (!isPhoneNumberExists(pnm2.number().getNationalNumber())) {
 						saveTweetEntity(tweet, city, queryHistory.getResource(), phoneNumbers, phone);
 						break;
-					}
-				} else if (phoneEntity.isEmpty()) {
+					} 
+				} else if (!phoneEntity.isPresent()) {
 					saveTweetEntity(tweet, city, queryHistory.getResource(), phoneNumbers, phone);
 				}
 			}
 		});
 	}
-	
+
 	private void saveTweetEntity(Status tweet, String city, String resource, Iterator<PhoneNumberMatch> phoneNumbers,
 			long phone) {
 		TweetEntity tweetToBeSaved = new TweetEntity();
@@ -238,7 +237,7 @@ public class AppInitializer {
 	private void checkAndAddPhoneNumber(TweetEntity savedEntity, long phone) {
 		Optional<PhoneEntity> phoneEntity = phoneRepo.findByPhoneNumber(phone);
 
-		if (phoneEntity.isEmpty())
+		if (!phoneEntity.isPresent())
 			log.info("Saved phone number successfully: {}", phoneRepo.save(new PhoneEntity(phone, savedEntity)));
 		else
 			log.info("Phone number {} already exists", phone);

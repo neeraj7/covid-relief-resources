@@ -14,9 +14,9 @@ public class QueryResultImpl implements QueryResult {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	private RateLimitStatusImpl limitStatus;
+	private RateLimitStatus limitStatus;
 	
-	public void setRateLimitStatus(RateLimitStatusImpl status) {
+	public void setRateLimitStatus(RateLimitStatus status) {
 		this.limitStatus = status;
 	}
 
