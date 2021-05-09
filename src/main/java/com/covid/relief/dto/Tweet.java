@@ -5,32 +5,32 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public class Tweet extends Basic {
+public class Tweet {
 	
 //	private long tweetId;
 	
-	private Date createdAt;
+//	private Date createdAt;
 	
 	@JsonProperty("tweet")
 	private String text;
-	
-	private Set<Phone> contacts;
-	
-	private String resource;
-	
-	private String userEntity;
-	
-	private Set<City> cities;
-	
+//	
+//	private Set<Phone> contacts;
+//	
+//	private String resource;
+//	
+//	private String userEntity;
+//	
+//	private Set<City> cities;
+//	
 	private String older;
 	
-	public String getResource() {
-		return resource;
-	}
-
-	public void setResource(String resource) {
-		this.resource = resource;
-	}
+//	public String getResource() {
+//		return resource;
+//	}
+//
+//	public void setResource(String resource) {
+//		this.resource = resource;
+//	}
 	
 	public String getOlder() {
 		return older;
@@ -40,21 +40,21 @@ public class Tweet extends Basic {
 		this.older = older;
 	}
 
-	public String getUserEntity() {
-		return userEntity;
-	}
-
-	public void setUserEntity(String userEntity) {
-		this.userEntity = userEntity;
-	}
-
-	public Set<City> getCities() {
-		return cities;
-	}
-
-	public void setCities(Set<City> cities) {
-		this.cities = cities;
-	}
+//	public String getUserEntity() {
+//		return userEntity;
+//	}
+//
+//	public void setUserEntity(String userEntity) {
+//		this.userEntity = userEntity;
+//	}
+//
+//	public Set<City> getCities() {
+//		return cities;
+//	}
+//
+//	public void setCities(Set<City> cities) {
+//		this.cities = cities;
+//	}
 
 //	public long getTweetId() {
 //		return tweetId;
@@ -64,13 +64,13 @@ public class Tweet extends Basic {
 //		this.tweetId = tweetId;
 //	}
 
-	public Date getCreatedAt() {
-		return createdAt;
-	}
-
-	public void setCreatedAt(Date createdAt) {
-		this.createdAt = createdAt;
-	}
+//	public Date getCreatedAt() {
+//		return createdAt;
+//	}
+//
+//	public void setCreatedAt(Date createdAt) {
+//		this.createdAt = createdAt;
+//	}
 
 	public String getText() {
 		return text;
@@ -80,12 +80,12 @@ public class Tweet extends Basic {
 		this.text = text;
 	}
 
-	public Set<Phone> getContacts() {
-		return contacts;
-	}
-
-	public void setContacts(Set<Phone> contacts) {
-		this.contacts = contacts;
-	}
+//	public Set<Phone> getContacts() {
+//		return contacts;
+//	}
+//
+//	public void setContacts(Set<Phone> contacts) {
+//		this.contacts = contacts;
+//	}
 
 }

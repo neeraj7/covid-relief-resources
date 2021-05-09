@@ -21,26 +21,37 @@
 		<m2e.apt.activation>jdt_apt</m2e.apt.activation>
 		<org.mapstruct.version>1.4.2.Final</org.mapstruct.version>
 	</properties>
-     <dependencyManagement>
+	<dependencyManagement>
 		<dependencies>
-			
-<dependency>
-    <groupId>org.springframework.cloud</groupId>
-    <artifactId>spring-cloud-gcp-dependencies</artifactId>
-    <version>1.2.8.RELEASE</version>
-    <type>pom</type>
-    <scope>import</scope>
-</dependency>
+			<dependency>
+				<groupId>com.vaadin</groupId>
+				<artifactId>vaadin-bom</artifactId>
+				<version>19.0.6</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-gcp-dependencies</artifactId>
+				<version>1.2.8.RELEASE</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 
 	<dependencies>
-        <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
-        <version>1.2.8.RELEASE</version>
-      </dependency>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-gcp-starter-sql-postgresql</artifactId>
+			<version>1.2.8.RELEASE</version>
+		</dependency>
+
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-spring-boot-starter</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>org.mapstruct</groupId>
@@ -94,7 +105,6 @@
 			<version>42.2.20</version>
 		</dependency>
 
-
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
@@ -127,15 +137,15 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
-            <plugin>
-        <groupId>com.google.cloud.tools</groupId>
-        <artifactId>appengine-maven-plugin</artifactId>
-        <version>2.2.0</version>
-        <configuration>
-          <version>1</version>
-          <projectId>GCLOUD_CONFIG</projectId>
-        </configuration>
-      </plugin>
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>appengine-maven-plugin</artifactId>
+				<version>2.2.0</version>
+				<configuration>
+					<version>1</version>
+					<projectId>GCLOUD_CONFIG</projectId>
+				</configuration>
+			</plugin>
 
 		</plugins>
 	</build>

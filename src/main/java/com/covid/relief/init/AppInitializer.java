@@ -56,6 +56,8 @@ public class AppInitializer {
 
 	private static Map<String, List<QueryHistory>> cities = new HashMap<>(100);
 
+	private static List<QueryHistory> resources = new ArrayList<>();
+	
 	@Autowired
 	private TweetRepository tweetRepo;
 
@@ -80,7 +82,6 @@ public class AppInitializer {
 			Resource resource = new ClassPathResource("resources.txt");
 			
 			BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-			List<QueryHistory> resources = new ArrayList<>();
 			br.lines().forEach(l -> resources.add(new QueryHistory(l.toLowerCase())));
 
 			Resource city = new ClassPathResource("cities.txt");
@@ -97,9 +98,13 @@ public class AppInitializer {
 	public static Map<String, List<QueryHistory>> getCitiesMapping() {
 		return cities;
 	}
+	
+	public static List<QueryHistory> getResourcesList() {
+		return resources;
+	}
 
 	// 30 minutes fixedRate
-	@Scheduled(initialDelay = 10000, fixedRate = 1800 * 1000)
+//	@Scheduled(initialDelay = 10000, fixedRate = 1800 * 1000)
 	public void run() {
 		long start = Instant.now().toEpochMilli();
 		log.info("Querying twitter to fetch tweets started at :: " + Calendar.getInstance().getTime());
@@ -217,6 +222,9 @@ public class AppInitializer {
 			return cityRepo.save(new CityEntity(location.toLowerCase()));
 		}).collect(Collectors.toSet());
 		tweetToBeSaved.setCities(cities);
+		
+		// save all the resources and get the desired set for tweet
+		
 
 		// Save it to DB;
 		TweetEntity savedEntity = tweetRepo.save(tweetToBeSaved);
