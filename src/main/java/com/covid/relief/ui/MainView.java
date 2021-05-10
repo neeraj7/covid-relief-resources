@@ -6,9 +6,11 @@ import java.util.stream.Collectors;
 import com.covid.relief.dto.Tweet;
 import com.covid.relief.init.AppInitializer;
 import com.covid.relief.service.TwitterService;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
@@ -35,9 +37,9 @@ public class MainView extends VerticalLayout {
         title.setHeight("100px");
         
         updateCityAndResource();
-        
-        HorizontalLayout hl = new HorizontalLayout();
-        hl.add(cities, resources);
+        Button btn = new Button("Refresh");
+        btn.addClickListener(e -> updateList());
+        HorizontalLayout hl = new HorizontalLayout(cities, resources, btn);
         
         add(title, hl, grid);
         
