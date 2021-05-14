@@ -103,8 +103,8 @@ public class AppInitializer {
 		return resources;
 	}
 
-	// 30 minutes fixedRate
-	@Scheduled(initialDelay = 10000, fixedRate = 970 * 1000)
+	// Added 10 seconds delay
+	@Scheduled(initialDelay = 10000, fixedDelay = 10000)
 	public void run() {
 		long start = Instant.now().toEpochMilli();
 		log.info("Querying twitter to fetch tweets started at :: " + Calendar.getInstance().getTime());

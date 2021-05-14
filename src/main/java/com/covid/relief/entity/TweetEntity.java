@@ -3,11 +3,13 @@ package com.covid.relief.entity;
 import java.util.Date;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
@@ -26,6 +28,9 @@ public class TweetEntity extends BasicEntity {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "tweet_cities")
 	private Set<CityEntity> cities;
+	
+	@OneToMany(mappedBy = "tweet", orphanRemoval = true, cascade = CascadeType.PERSIST)
+	private Set<PhoneEntity> phone;
 	
 	private String resource;
 
