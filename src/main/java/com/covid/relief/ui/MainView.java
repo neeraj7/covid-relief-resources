@@ -37,8 +37,6 @@ public class MainView extends VerticalLayout {
         Label grace = new Label("With the grace of Lord Shiva");
         grace.getStyle().set("padding-top", "10px");
         title.getStyle().set("font-size", "50px");
-        Label filter = new Label("Select city and type of resource to filter: ");
-        filter.getStyle().set("margin-top", "50px");
         setMaxHeight("100%");
         updateCityAndResource();
         Button btn = new Button("Refresh");
@@ -47,18 +45,16 @@ public class MainView extends VerticalLayout {
         hl.setDefaultVerticalComponentAlignment(Alignment.CENTER);
         Label footer = new Label("Note: Aim of this website is to help people by providing details of covid related resources fetched from tweets by humans who are willing to help others.");
         footer.getStyle().set("margin", "20px");
-        footer.getStyle().set("margin-top", "30px");
+        footer.getStyle().set("margin-top", "60px");
         footer.getStyle().set("background-color", "yellow");
-        filter.getStyle().set("margin-left", "32%");
-        VerticalLayout vl = new VerticalLayout(grace, title, filter, hl, grid, footer);
+        VerticalLayout vl = new VerticalLayout(grace, title, hl, grid, footer);
         vl.setAlignItems(Alignment.CENTER);
-        vl.setAlignSelf(Alignment.START, filter);
         vl.setHeight("600px");
         add(vl);
         
         grid.setMaxWidth("90%");
         grid.setHeightByRows(true);
-        grid.setMaxHeight("65%");
+        grid.setMaxHeight("74%");
         grid.setPageSize(10);
         this.setHorizontalComponentAlignment(Alignment.CENTER, grid);
         
