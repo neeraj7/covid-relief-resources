@@ -56,5 +56,4 @@ public class TwitterService {
 				.collect(Collectors.toList());
 
 	}
-
 }

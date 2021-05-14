@@ -1,6 +1,5 @@
 package com.covid.relief.ui;
 
-import java.awt.Panel;
 import java.util.stream.Collectors;
 
 import com.covid.relief.dto.Tweet;
@@ -10,13 +9,14 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.html.Label;
-import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
+import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 
 @Route("")
+@PageTitle("Covid Relief Resources")
 public class MainView extends VerticalLayout {
 	
 	private ComboBox<String> resources = new ComboBox<String>("Select resource");
@@ -33,19 +33,31 @@ public class MainView extends VerticalLayout {
 		// copied code
         this.grid = new Grid<>(Tweet.class);
         
-        Label title = new Label("Covid Relief Resources");
-        title.setHeight("100px");
-        
+        Label title = new Label("Covid Relief Resources"); 
+        Label grace = new Label("With the grace of Lord Shiva");
+        grace.getStyle().set("padding", "20px");
+        title.getStyle().set("font-size", "50px");
+        setMaxHeight("100%");
         updateCityAndResource();
         Button btn = new Button("Refresh");
         btn.addClickListener(e -> updateList());
         HorizontalLayout hl = new HorizontalLayout(cities, resources, btn);
+        hl.getStyle().set("padding", "40px");
+        hl.setDefaultVerticalComponentAlignment(Alignment.CENTER);
+        title.setHeight("20px");
+        grace.setHeight("10px");
+        btn.setHeight("40px");
         
-        add(title, hl, grid);
+        VerticalLayout vl = new VerticalLayout(grace, title, hl, grid);
+        vl.setAlignItems(Alignment.CENTER);
+        vl.setHeight("600px");
+        add(vl);
         
-        grid.setSizeFull();
+        grid.setMaxWidth("90%");
         grid.setHeightByRows(true);
+        grid.setMaxHeight("65%");
         grid.setPageSize(10);
+        this.setHorizontalComponentAlignment(Alignment.CENTER, grid);
         
         grid.removeColumnByKey("older");
         grid.removeColumnByKey("text");
@@ -53,7 +65,7 @@ public class MainView extends VerticalLayout {
         grid.addColumn(
 				TemplateRenderer.<Tweet>of("<div style='white-space:normal'>[[item.text]]</div>")
 						.withProperty("text", Tweet::getText))
-				.setHeader("Text").setFlexGrow(1);
+				.setHeader("Tweets").setFlexGrow(1);
         grid.addColumn(
 				TemplateRenderer.<Tweet>of("<div style='white-space:normal'>[[item.older]]</div>")
 						.withProperty("older", Tweet::getOlder))

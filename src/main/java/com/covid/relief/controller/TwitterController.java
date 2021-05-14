@@ -1,12 +1,9 @@
 package com.covid.relief.controller;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,11 +31,6 @@ public class TwitterController {
 		return twitterService.getAllSavedTweets(city, resource);
 	}
 	
-	@DeleteMapping("/{id}")
-	public boolean deleteTweetById(@PathVariable UUID id) {
-		return twitterService.deleteTweetById(id);
-	}
-
 //	@GetMapping("/query")
 //	public QueryResult getQueryResult(@RequestParam("city") String city, @RequestParam("resource") String resource) {
 //		return twitterService.
