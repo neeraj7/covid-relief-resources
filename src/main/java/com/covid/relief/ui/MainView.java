@@ -8,6 +8,7 @@ import com.covid.relief.service.TwitterService;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Label;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -35,21 +36,28 @@ public class MainView extends VerticalLayout {
         
         Label title = new Label("Covid Relief Resources"); 
         Label grace = new Label("With the grace of Lord Shiva");
-        grace.getStyle().set("padding", "20px");
+        grace.getStyle().set("padding-top", "10px");
         title.getStyle().set("font-size", "50px");
+        Label filter = new Label("Select city and type of resource to filter: ");
+        filter.getStyle().set("margin-top", "50px");
         setMaxHeight("100%");
         updateCityAndResource();
         Button btn = new Button("Refresh");
         btn.addClickListener(e -> updateList());
         HorizontalLayout hl = new HorizontalLayout(cities, resources, btn);
-        hl.getStyle().set("padding", "40px");
+//        hl.getStyle().set("padding", "40px");
         hl.setDefaultVerticalComponentAlignment(Alignment.CENTER);
-        title.setHeight("20px");
-        grace.setHeight("10px");
-        btn.setHeight("40px");
-        
-        VerticalLayout vl = new VerticalLayout(grace, title, hl, grid);
+//        title.setHeight("20px");
+//        grace.setHeight("10px");
+//        btn.setHeight("40px");
+        Label footer = new Label("Note: Aim of this website is to help people by providing details of covid related resources fetched from tweets by humans who are willing to help others.");
+        footer.getStyle().set("margin", "20px");
+        footer.getStyle().set("margin-top", "30px");
+        footer.getStyle().set("background-color", "yellow");
+        filter.getStyle().set("margin-left", "32%");
+        VerticalLayout vl = new VerticalLayout(grace, title, filter, hl, grid, footer);
         vl.setAlignItems(Alignment.CENTER);
+        vl.setAlignSelf(Alignment.START, filter);
         vl.setHeight("600px");
         add(vl);
         
