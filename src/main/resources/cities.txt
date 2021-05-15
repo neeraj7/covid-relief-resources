@@ -17,3 +17,4 @@ tamilnadu
 uttar pradesh
 assam
 faridabad
+bhopal
