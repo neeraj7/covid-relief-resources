@@ -1,8 +1,6 @@
 package com.covid.relief.exception.handler;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.core.Ordered;
@@ -44,6 +42,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 	   error.setSubErrors(subErrors);
 	   return new ResponseEntity<>(error, error.getStatus());
 	}
+   
    @ExceptionHandler(ApiRuntimeException.class)
    protected ResponseEntity<Object> handleRuntimeException(ApiRuntimeException ex) {
        return buildResponseEntity(ex);

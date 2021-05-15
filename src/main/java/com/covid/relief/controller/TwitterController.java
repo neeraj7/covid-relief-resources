@@ -24,7 +24,7 @@ public class TwitterController {
 
 	@Autowired
 	private TwitterService twitterService;
-
+	
 	@GetMapping
 	public List<Tweet> getTweetsByHashtag(@RequestParam(value = "city", required = false) String city,
 			@RequestParam(value = "resource", required = false) String resource) {

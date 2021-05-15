@@ -16,11 +16,12 @@ import javax.persistence.Table;
 @Table(name = "tweet")
 public class TweetEntity extends BasicEntity {
 
+	@Column(name = "tweet_id", unique = true)
 	private long tweetId;
 
 	private Date createdAt;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(columnDefinition = "TEXT", unique = true)
 	private String text;
 
 	private String userName;

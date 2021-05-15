@@ -19,6 +19,8 @@ public interface TweetRepository extends JpaRepository<TweetEntity, UUID>{
 
 	Optional<TweetEntity> findByTweetId(long id);
 	
+	Optional<TweetEntity> findByText(String text);
+	
 	List<TweetEntity> findByCitiesAndResourceOrderByCreatedAtDesc(CityEntity city, String resource);
 	
 	List<TweetEntity> findByCitiesOrderByCreatedAtDesc(CityEntity city);

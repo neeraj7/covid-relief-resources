@@ -58,10 +58,8 @@ public class MainView extends VerticalLayout {
         
         // Updating UI based on the device
         if(isMobileDevice()) {
-        	
         	HorizontalLayout forButtonMobile = new HorizontalLayout(cities, resources);
         	VerticalLayout forMobile = new VerticalLayout(forButtonMobile, btn);
-//        	forButtonMobile.setAlignItems(Alignment.START);
         	title.getStyle().set("font-size", "30px");
         	vl.add(grace, title, forMobile, grid, footer);
         	vl.setSpacing(false);

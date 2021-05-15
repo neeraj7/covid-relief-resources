@@ -57,7 +57,7 @@ public class AppInitializer {
 	private static Map<String, List<QueryHistory>> cities = new HashMap<>(100);
 
 	private static List<QueryHistory> resources = new ArrayList<>();
-	
+
 	@Autowired
 	private TweetRepository tweetRepo;
 
@@ -80,15 +80,15 @@ public class AppInitializer {
 		try {
 
 			Resource resource = new ClassPathResource("resources.txt");
-			
+
 			BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()));
 			br.lines().forEach(l -> resources.add(new QueryHistory(l.toLowerCase())));
 
 			Resource city = new ClassPathResource("cities.txt");
-			
+
 			BufferedReader br2 = new BufferedReader(new InputStreamReader(city.getInputStream()));
 			br2.lines().forEach(l -> cities.put(l.toLowerCase(), resources));
-			
+
 		} catch (IOException e) {
 			log.error("Error happened in reading files.");
 		}
@@ -98,7 +98,7 @@ public class AppInitializer {
 	public static Map<String, List<QueryHistory>> getCitiesMapping() {
 		return cities;
 	}
-	
+
 	public static List<QueryHistory> getResourcesList() {
 		return resources;
 	}
@@ -131,14 +131,14 @@ public class AppInitializer {
 
 			if (result.getRateLimitStatus().getRemaining() == 0) {
 				try {
-					if(result.getRateLimitStatus().getSecondsUntilReset() >= 0 ) {
-					// wait for refresh limit to reset
-					log.info("waiting till the rate limit resets in {} seconds",
-							result.getRateLimitStatus().getSecondsUntilReset());
-					Thread.sleep(result.getRateLimitStatus().getSecondsUntilReset() * 1000);
-					log.info("Wait is over, and querying starts again.");
-					}					
-					
+					if (result.getRateLimitStatus().getSecondsUntilReset() >= 0) {
+						// wait for refresh limit to reset
+						log.info("waiting till the rate limit resets in {} seconds",
+								result.getRateLimitStatus().getSecondsUntilReset());
+						Thread.sleep(result.getRateLimitStatus().getSecondsUntilReset() * 1000);
+						log.info("Wait is over, and querying starts again.");
+					}
+
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -146,7 +146,7 @@ public class AppInitializer {
 		}));
 		long end = Instant.now().toEpochMilli();
 		log.info("Quering twitter finished :: " + Calendar.getInstance().getTime());
-		log.info("Time taken: {} seconds" + (end - start) / 1000);
+		log.info("Time taken: {} seconds", (end - start) / 1000);
 	}
 
 	private QueryResult fetchQueryResult(Query query) {
@@ -157,7 +157,6 @@ public class AppInitializer {
 		} catch (TwitterException e) {
 			log.error("Exception occured while querying the twitter: {}", query.getQuery());
 			QueryResultImpl result = new QueryResultImpl();
-//			RateLimitStatusImpl status = new RateLimitStatusImpl(e.getRateLimitStatus());
 			result.setRateLimitStatus(e.getRateLimitStatus());
 			return result;
 		}
@@ -192,7 +191,7 @@ public class AppInitializer {
 					if (!isPhoneNumberExists(pnm2.number().getNationalNumber())) {
 						saveTweetEntity(tweet, city, queryHistory.getResource(), phoneNumbers, phone);
 						break;
-					} 
+					}
 				} else if (!phoneEntity.isPresent()) {
 					saveTweetEntity(tweet, city, queryHistory.getResource(), phoneNumbers, phone);
 				}
@@ -202,12 +201,19 @@ public class AppInitializer {
 
 	private void saveTweetEntity(Status tweet, String city, String resource, Iterator<PhoneNumberMatch> phoneNumbers,
 			long phone) {
+
 		TweetEntity tweetToBeSaved = new TweetEntity();
 		tweetToBeSaved.setTweetId(tweet.getId());
 		tweetToBeSaved.setCreatedAt(tweet.getCreatedAt());
 		tweetToBeSaved.setUserName(tweet.getUser().getScreenName());
 		tweetToBeSaved.setText(extractRelevantTextFromTweet(tweet).trim());
 		tweetToBeSaved.setResource(resource.toLowerCase());
+
+		// check whether data already exists or not
+		if (isDuplicate(tweetToBeSaved)) {
+			// save nothing and return
+			return;
+		}
 
 		// save all the cities and get the desired set for tweet
 		Set<String> locations = sentenceDetectorNLP.extractLocationData(tweetToBeSaved.getText());
@@ -222,9 +228,8 @@ public class AppInitializer {
 			return cityRepo.save(new CityEntity(location.toLowerCase()));
 		}).collect(Collectors.toSet());
 		tweetToBeSaved.setCities(cities);
-		
+
 		// save all the resources and get the desired set for tweet
-		
 
 		// Save it to DB;
 		TweetEntity savedEntity = tweetRepo.save(tweetToBeSaved);
@@ -236,6 +241,18 @@ public class AppInitializer {
 		}
 
 		log.info("Saved tweet entity successfully: {}", savedEntity);
+	}
+
+	private boolean isDuplicate(TweetEntity tweetEntity) {
+
+		Optional<TweetEntity> tweetId = tweetRepo.findByTweetId(tweetEntity.getTweetId());
+		Optional<TweetEntity> text = tweetRepo.findByText(tweetEntity.getText());
+
+		if (tweetId.isPresent() || text.isPresent()) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private Date updateDateAsIST(Date date) {
