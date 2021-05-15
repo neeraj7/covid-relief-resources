@@ -3,9 +3,6 @@ package com.covid.relief.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,7 +43,7 @@ public class TwitterController {
 		return twitterService.getAllSavedTweets(city, resource);
 	}
 	
-	@GetMapping("delete")
+	// @GetMapping("delete")
 	public String deleteApi() {
 		
 		Map<String, TweetEntity> unique = new HashMap<>();
