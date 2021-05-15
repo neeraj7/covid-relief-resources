@@ -14,6 +14,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.renderer.TemplateRenderer;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.server.VaadinSession;
+import com.vaadin.flow.server.WebBrowser;
 
 @Route("")
 @PageTitle("Covid Relief Resources")
@@ -41,13 +43,28 @@ public class MainView extends VerticalLayout {
         updateCityAndResource();
         Button btn = new Button("Refresh");
         btn.addClickListener(e -> updateList());
+        
+        
         HorizontalLayout hl = new HorizontalLayout(cities, resources, btn);
+        
+        
         hl.setDefaultVerticalComponentAlignment(Alignment.CENTER);
         Label footer = new Label("Note: Aim of this website is to help people by providing details of covid related resources fetched from tweets by humans who are willing to help others.");
         footer.getStyle().set("margin", "20px");
         footer.getStyle().set("margin-top", "60px");
         footer.getStyle().set("background-color", "yellow");
-        VerticalLayout vl = new VerticalLayout(grace, title, hl, grid, footer);
+        
+        
+        VerticalLayout vl = new VerticalLayout();
+        
+        // Updating UI based on the device
+        if(isMobileDevice()) {
+        	VerticalLayout forMobile = new VerticalLayout(cities, resources, btn);
+        	vl.add(grace, title, forMobile, grid, footer);
+        } else {
+        	vl.add(grace, title, hl, grid, footer);
+        }
+        
         vl.setAlignItems(Alignment.CENTER);
         vl.setHeight("600px");
         add(vl);
@@ -71,6 +88,11 @@ public class MainView extends VerticalLayout {
 				.setHeader("Older").setWidth("150px").setFlexGrow(0);
 
         updateList();
+	}
+	
+	public boolean isMobileDevice() {
+		WebBrowser browser = VaadinSession.getCurrent().getBrowser();
+		return browser.isAndroid() || browser.isIPhone() || browser.isWindowsPhone();
 	}
 
 	private void updateCityAndResource() {
