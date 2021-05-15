@@ -37,7 +37,6 @@ public class MainView extends VerticalLayout {
         
         Label title = new Label("Covid Relief Resources"); 
         Label grace = new Label("With the grace of Lord Shiva");
-        grace.getStyle().set("padding-top", "10px");
         title.getStyle().set("font-size", "50px");
         setMaxHeight("100%");
         updateCityAndResource();
@@ -59,10 +58,21 @@ public class MainView extends VerticalLayout {
         
         // Updating UI based on the device
         if(isMobileDevice()) {
-        	VerticalLayout forMobile = new VerticalLayout(cities, resources, btn);
+        	
+        	HorizontalLayout forButtonMobile = new HorizontalLayout(cities, resources);
+        	VerticalLayout forMobile = new VerticalLayout(forButtonMobile, btn);
+//        	forButtonMobile.setAlignItems(Alignment.START);
+        	title.getStyle().set("font-size", "30px");
         	vl.add(grace, title, forMobile, grid, footer);
+        	vl.setSpacing(false);
+        	grid.setMaxHeight("75%");
+        	grace.getStyle().set("padding-top", "0px");
+        	grace.getStyle().set("margin-top", "0px");
+            footer.getStyle().set("margin-top", "20px");
         } else {
+        	grace.getStyle().set("padding-top", "10px");
         	vl.add(grace, title, hl, grid, footer);
+        	grid.setMaxHeight("74%");
         }
         
         vl.setAlignItems(Alignment.CENTER);
@@ -71,7 +81,6 @@ public class MainView extends VerticalLayout {
         
         grid.setMaxWidth("90%");
         grid.setHeightByRows(true);
-        grid.setMaxHeight("74%");
         grid.setPageSize(10);
         this.setHorizontalComponentAlignment(Alignment.CENTER, grid);
         
