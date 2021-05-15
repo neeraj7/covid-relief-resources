@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.covid.relief.dto.CityAndResource;
 import com.covid.relief.open.nlp.SentenceDetectorNLP;
 import com.covid.relief.service.TwitterService;
 
@@ -21,11 +24,32 @@ public class WelcomeController {
 	@Autowired
 	private TwitterService service;
 
-//	@GetMapping
-//	public String welcomeHome(Model model) {
-//		model.addAttribute("tweets", service.getAllSavedTweets(null, null));
-//		return "index";
-//	}
+	@GetMapping
+	public String welcomeHome(Model model) {
+		model.addAttribute("tweets", service.getAllSavedTweets(null, null));
+		return "index";
+	}
+	
+	@GetMapping("/form")
+	public String formTest() {
+		return "index";
+	}
+	
+	@PostMapping("/search")
+	public String formSubmit(Model model, @ModelAttribute CityAndResource cityResource) {
+		model.addAttribute("tweets", service.getAllSavedTweets(cityResource.getCity(), cityResource.getResource()));
+		return "tweets";
+	}
+	
+	@GetMapping("/style")
+	public String style() {
+		return "add-css-js-demo";
+	}
+	
+	@GetMapping("/bootstrap")
+	public String bootstrap() {
+		return "bootstrap-example";
+	}
 	
 	@GetMapping("/resources")
 	public Set<String> getResources() {
