@@ -104,7 +104,7 @@ public class AppInitializer {
 	}
 
 	// Added 10 seconds delay
-//	@Scheduled(initialDelay = 10000, fixedDelay = 10000)
+	@Scheduled(initialDelay = 10000, fixedDelay = 10000)
 	public void run() {
 		long start = Instant.now().toEpochMilli();
 		log.info("Querying twitter to fetch tweets started at :: " + Calendar.getInstance().getTime());
@@ -246,11 +246,11 @@ public class AppInitializer {
 	private boolean isDuplicate(TweetEntity tweetEntity) {
 
 		Optional<TweetEntity> tweetId = tweetRepo.findByTweetId(tweetEntity.getTweetId());
-//		Optional<TweetEntity> text = tweetRepo.findByText(tweetEntity.getText());
+		List<TweetEntity> text = tweetRepo.findByText(tweetEntity.getText());
 
-//		if (tweetId.isPresent() || text.isPresent()) {
-//			return true;
-//		}
+		if (tweetId.isPresent() || !text.isEmpty()) {
+			return true;
+		}
 
 		return false;
 	}
