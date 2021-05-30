@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.covid.relief.dto.Tweet;
 import com.covid.relief.entity.TweetEntity;
 import com.covid.relief.init.AppInitializer;
+import com.covid.relief.mapper.TweetMapper;
 import com.covid.relief.repository.TweetRepository;
 import com.covid.relief.service.TwitterService;
 
@@ -67,9 +70,12 @@ public class TwitterController {
 	}
 
 	@GetMapping("/oldTweets")
-	public List<TweetEntity> getOldTweets() {
+	public List<Tweet> getOldTweets() {
 		return tweetRepo.findByCreatedAtLessThan(
-				Date.from(LocalDate.now().minusWeeks(2).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+				Date.from(LocalDate.now().minusWeeks(2).atStartOfDay(ZoneId.systemDefault()).toInstant()))
+				.stream()
+				.map(entity -> Mappers.getMapper(TweetMapper.class).toModel(entity))
+				.collect(Collectors.toList());
 	}
 
 //	@GetMapping("/query")
