@@ -77,6 +77,18 @@ public class TwitterController {
 				.map(entity -> Mappers.getMapper(TweetMapper.class).toModel(entity))
 				.collect(Collectors.toList());
 	}
+	
+	@GetMapping("/deleteOld")
+	public String deleteOldTweets() {
+		List<TweetEntity> oldTweets = tweetRepo.findByCreatedAtLessThan(
+				Date.from(LocalDate.now().minusWeeks(2).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+		if(oldTweets.isEmpty())
+			return "Found no older tweets";
+		else {
+			tweetRepo.deleteAll(oldTweets);
+			return "Delete 2 weeks older tweets.";
+		}
+	}
 
 //	@GetMapping("/query")
 //	public QueryResult getQueryResult(@RequestParam("city") String city, @RequestParam("resource") String resource) {
