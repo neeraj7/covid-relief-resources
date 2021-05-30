@@ -5,10 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import javax.transaction.Transactional;
-
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
 
 import com.covid.relief.entity.CityEntity;
@@ -27,8 +24,6 @@ public interface TweetRepository extends JpaRepository<TweetEntity, UUID>{
 	
 	List<TweetEntity> findByResourceOrderByCreatedAtDesc(String resource);
 	
-	@Transactional
-	@Modifying
-	void deleteByCreatedAtLessThan(Date createdAt);
+	List<TweetEntity> findByCreatedAtLessThan(Date createdAt);
 	
 }

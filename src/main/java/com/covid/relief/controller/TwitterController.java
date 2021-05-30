@@ -1,5 +1,8 @@
 package com.covid.relief.controller;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,41 +31,47 @@ import twitter4j.TwitterStreamFactory;
 @RestController
 @RequestMapping("/twitter")
 public class TwitterController {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(TwitterController.class);
 
 	@Autowired
 	private TwitterService twitterService;
-	
+
 	@Autowired
 	private TweetRepository tweetRepo;
-	
+
 	@GetMapping
 	public List<Tweet> getTweetsByHashtag(@RequestParam(value = "city", required = false) String city,
 			@RequestParam(value = "resource", required = false) String resource) {
 		return twitterService.getAllSavedTweets(city, resource);
 	}
-	
-	 @GetMapping("delete")
+
+	@GetMapping("delete")
 	public String deleteApi() {
-		
+
 		Map<String, TweetEntity> unique = new HashMap<>();
-		
+
 		List<TweetEntity> list = tweetRepo.findAll();
-		
+
 		list.stream().forEach(tweet -> {
-			if(unique.containsKey(tweet.getText())) {
+			if (unique.containsKey(tweet.getText())) {
 				// duplicate found, so delete it now...
 				log.info("Deleting duplicate tweet: {}", tweet.getText().substring(0, 11));
 				tweetRepo.delete(tweet);
-				
+
 			} else {
 				unique.put(tweet.getText(), tweet);
 			}
 		});
 		return "Duplicates deleted";
 	}
-	
+
+	@GetMapping("/oldTweets")
+	public List<TweetEntity> getOldTweets() {
+		return tweetRepo.findByCreatedAtLessThan(
+				Date.from(LocalDate.now().minusWeeks(2).atStartOfDay(ZoneId.systemDefault()).toInstant()));
+	}
+
 //	@GetMapping("/query")
 //	public QueryResult getQueryResult(@RequestParam("city") String city, @RequestParam("resource") String resource) {
 //		return twitterService.
