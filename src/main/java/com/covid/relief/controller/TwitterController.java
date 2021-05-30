@@ -43,7 +43,7 @@ public class TwitterController {
 		return twitterService.getAllSavedTweets(city, resource);
 	}
 	
-	// @GetMapping("delete")
+	 @GetMapping("delete")
 	public String deleteApi() {
 		
 		Map<String, TweetEntity> unique = new HashMap<>();
@@ -60,11 +60,6 @@ public class TwitterController {
 				unique.put(tweet.getText(), tweet);
 			}
 		});
-		
-		
-		
-//		tweetRepo.findByText(null)
-		
 		return "Duplicates deleted";
 	}
 	
